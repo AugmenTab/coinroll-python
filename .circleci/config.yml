@@ -20,6 +20,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install dependencies
+          command: pip install pytest
+      - run:
           name: Running tests
           command: pip run pytest
 
