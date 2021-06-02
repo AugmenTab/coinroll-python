@@ -7,6 +7,9 @@ jobs:
       - image: "circleci/python:3.9.1"
     steps:
       - checkout
+      - run:
+          name: Install dependencies
+          command: pipenv install -r requirements.txt
       - run: 
           name: Building
           command: python3 backend/src/main.py
