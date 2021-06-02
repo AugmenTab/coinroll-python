@@ -1,2 +1,2 @@
 # stelligent-demo
-A respository for the take-home sample project.
+A repository for the take-home sample project.
