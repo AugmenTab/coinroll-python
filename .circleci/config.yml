@@ -2,16 +2,16 @@ version: 2.1
 
 jobs:
   build:
-    working_directory: ~/circleci-python/backend
+    working_directory: ~/circleci-python
     docker:
       - image: "circleci/python:3.9.1"
     steps:
       - checkout
       - run: 
           name: Building
-          command: python3 src/main.py
+          command: python3 backend/src/main.py
   test:
-    working_directory: ~/circleci-python/backend
+    working_directory: ~/circleci-python
     docker:
       - image: "circleci/python:3.9.1"
     steps:
