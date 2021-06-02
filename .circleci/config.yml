@@ -9,7 +9,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pipenv install -r backend/requirements.txt
+          command: pip install -r backend/requirements.txt
       - run: 
           name: Building
           command: python3 backend/src/main.py
@@ -21,7 +21,7 @@ jobs:
       - checkout
       - run:
           name: Running tests
-          command: pipenv run pytest
+          command: pip run pytest
 
 workflows:
   build_and_test:
