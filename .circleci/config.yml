@@ -20,8 +20,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install dependencies
+          command: pip install --dev pytest
+      - run:
           name: Running tests
-          command: pytest
+          command: pip run pytest
 
 workflows:
   build_and_test:
