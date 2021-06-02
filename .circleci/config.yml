@@ -1,18 +1,18 @@
 version: 2.1
 
 jobs:
-  build:
-    working_directory: ~/circleci-python
-    docker:
-      - image: "circleci/python:3.9.1"
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: pip install -r backend/requirements.txt
-      - run: 
-          name: Building
-          command: python3 backend/src/main.py
+  # build:
+  #   working_directory: ~/circleci-python
+  #   docker:
+  #     - image: "circleci/python:3.9.1"
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install dependencies
+  #         command: pip install -r backend/requirements.txt
+  #     - run: 
+  #         name: Building
+  #         command: python3 backend/src/main.py
   test:
     working_directory: ~/circleci-python
     docker:
@@ -26,7 +26,7 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - build
+      # - build
       - test:
-          requires:
-            - build
+          # requires:
+          #   - build
