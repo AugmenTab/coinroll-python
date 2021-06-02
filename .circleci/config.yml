@@ -2,7 +2,7 @@ version: 2.1
 
 jobs:
   build:
-    working_directory: ~/circleci-python
+    working_directory: ~/circleci-python/backend
     docker:
       - image: "circleci/python:3.9.1"
     steps:
@@ -12,9 +12,9 @@ jobs:
           command: pipenv install -r requirements.txt
       - run: 
           name: Building
-          command: python3 backend/src/main.py
+          command: python3 src/main.py
   test:
-    working_directory: ~/circleci-python
+    working_directory: ~/circleci-python/backend
     docker:
       - image: "circleci/python:3.9.1"
     steps:
