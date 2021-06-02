@@ -9,7 +9,7 @@ jobs:
       - checkout
       - run: 
           name: Building
-          command: python3 main.py
+          command: python3 src/main.py
   test:
     working_directory: ~/circleci-python
     docker:
@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run:
           name: Running tests
-          command: python3 main-test.py
+          command: pipenv run pytest
 
 workflows:
   build_and_test:
