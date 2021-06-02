@@ -21,7 +21,7 @@ jobs:
       - checkout
       - run:
           name: Running tests
-          command: pipenv run pytest
+          command: pytest
 
 workflows:
   build_and_test:
