@@ -1,2 +1,2 @@
-#!/C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Git\Git Bash
-echo "test"
+#!C:\Program\ Files\Git\usr\bin\sh.exe
+cd backend && pipenv run pytest

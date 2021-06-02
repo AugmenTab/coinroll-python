@@ -8,6 +8,7 @@ fastapi = "*"
 pydantic = "*"
 mongoengine = "*"
 pyyaml = "*"
+uvicorn = "*"
 
 [dev-packages]
 pytest = "*"
