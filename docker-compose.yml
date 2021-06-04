@@ -8,12 +8,17 @@ services:
             - "8000:8000"
         depends_on:
             - mongodb
+        networks:
+        - mongodb_network
     mongodb:
         image: mongo
         container_name: mongodb
         environment:
             - MONGO_INITDB_ROOT_USERNAME=root
             - MONGO_INITDB_ROOT_PASSWORD=pass12345
+            - MONGODB_INITDB_USERNAME=tbaum
+            - MONGODB_INITDB_DATABASE=coin
+            - MONGODB_INITDB_PASSWORD=testpass
         volumes:
             - mongodb-data:/data/db
         networks:
