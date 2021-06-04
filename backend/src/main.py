@@ -5,33 +5,13 @@ from typing import Optional
 
 # 3p Imports
 from fastapi import FastAPI
-import mongoengine as db
 import uvicorn
 
 # Internal Imports
 try:
-    import config
+    from database import connect_to_db
 except:
     pass
-
-
-class Coin(db.Document):
-    name = db.StringField()
-    price = db.IntField()
-
-    def to_json(self):
-        return {
-            "name": self.name,
-            "price": self.price
-        }
-
-
-def connect_to_db():
-    coin = Coin(
-        name = "Ethereum", 
-        price = 2000
-    )
-    coin.save()
 
 
 app = FastAPI()
@@ -43,7 +23,6 @@ def add(a, b):
 
 @app.get("/")
 def read_root():
-    connect_to_db()
     return {"Hello": "World"}
 
 
@@ -53,11 +32,5 @@ def read_item(item_id: int, q: Optional[str] = None):
 
 
 if __name__ == '__main__':
-    db.connect(
-        db=config.database, 
-        host='mongodb://mongodb', 
-        port=27017, 
-        username=config.username, 
-        password=config.password
-    )
+    connect_to_db()
     uvicorn.run(app, port=8000, host="0.0.0.0")
