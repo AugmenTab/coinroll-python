@@ -9,7 +9,7 @@ import uvicorn
 
 # Internal Imports
 try:
-    from database import connect_to_db
+    from database import establish_db
 except:
     pass
 
@@ -32,5 +32,5 @@ def read_item(item_id: int, q: Optional[str] = None):
 
 
 if __name__ == '__main__':
-    connect_to_db()
+    establish_db()
     uvicorn.run(app, port=8000, host="0.0.0.0")

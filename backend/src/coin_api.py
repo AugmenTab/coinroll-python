@@ -10,14 +10,22 @@ except:
     pass
 
 
-def get_all_coins(params):
+def __transform_coin_listing(coin):
+    return {
+        'id': coin['id'],
+        'name': coin['name'],
+        'symbol': coin['symbol']
+    }
+
+
+def get_coin_listing(params):
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
     headers = {
         'X-CMC_PRO_API_KEY': key,
         'Accepts': 'application/json'
     }
-    data = requests.get(url, params=params, headers=headers).json()
-    return data['data']
+    listing = requests.get(url, params=params, headers=headers).json()['data']
+    return [__transform_coin_listing(coin) for coin in listing]
 
 
 def get_coin_data(slug):
@@ -31,5 +39,5 @@ def get_coin_data(slug):
         'convert': 'USD'
     }
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
-    data = requests.get(url, params=params, headers=headers).json()
-    return data['data']
+    data = requests.get(url, params=params, headers=headers).json()['data']
+    return data

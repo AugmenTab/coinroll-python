@@ -6,7 +6,7 @@ import mongoengine as db
 # Internal Imports
 try:
     from config import username, password, database
-    from coin_api import get_all_coins
+    from coin_api import get_coin_listing
 except:
     pass
 
@@ -24,8 +24,7 @@ class Coin(db.Document):
         }
 
 
-def update_coin_list():
-    data = get_all_coins({})
+def __update_coin_list(data):
     for x in data:
         coin = Coin(
             market_id = x['id'],
@@ -36,7 +35,7 @@ def update_coin_list():
         new.update(name=coin.name, symbol=coin.symbol, upsert=True)
 
 
-def connect_to_db():
+def establish_db():
     db.connect(
         db=database, 
         host='mongodb://mongodb', 
@@ -44,4 +43,4 @@ def connect_to_db():
         username=username, 
         password=password
     )
-    update_coin_list()
+    __update_coin_list(get_coin_listing({}))
