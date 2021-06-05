@@ -66,6 +66,10 @@ def get_coin_from_watchlist(id):
     return Watch.objects(market_id=id).first()
 
 
+def get_watchlist():
+    return [coin.to_json() for coin in Watch.objects()]
+
+
 def add_watched_coin(id):
     metadata = get_coin_metadata([str(id)])[0]
     quote = get_coin_quotes([str(id)])[0]
