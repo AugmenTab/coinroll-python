@@ -11,7 +11,13 @@ import uvicorn
 # Internal Imports
 try:
     from coin_api import get_coin_quotes
-    from database import establish_db, get_coin_from_db, add_watched_coin, get_coin_from_watchlist, remove_watched_coin
+    from database import (
+        establish_db, 
+        get_coin_from_db, 
+        add_watched_coin, 
+        get_coin_from_watchlist, 
+        remove_watched_coin
+    )
 except:
     pass
 
@@ -28,17 +34,7 @@ def add(a, b):
     return a + b
 
 
-@app.get('/')
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get('/items/{item_id}')
-def read_item(item_id: int, q: Optional[str] = None):
-    return {'item_id': item_id, 'q': q}
-
-
-# @app.get('/')  display watched coins
+# @app.get('/')  display watchlist
 
 
 @app.post('/watch')

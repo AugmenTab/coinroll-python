@@ -60,8 +60,7 @@ def get_coin_listing():
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
     h = __get_headers()
     listing = requests.get(url, params={}, headers=h).json()['data']
-    result = [__transform_coin_listing(coin) for coin in listing]
-    return result
+    return [__transform_coin_listing(coin) for coin in listing]
 
 
 # @asyncio.coroutine
@@ -70,8 +69,7 @@ def get_coin_metadata(ids):
     h = __get_headers()
     p = {'id': ','.join(ids)}
     metadata = requests.get(url, params=p, headers=h).json()['data']
-    result = [__transform_metadata(metadata.get(id)) for id in ids]
-    return result
+    return [__transform_metadata(metadata.get(id)) for id in ids]
 
 
 # @asyncio.coroutine
@@ -80,5 +78,4 @@ def get_coin_quotes(ids):
     h = __get_headers()
     p = {'id': ','.join(ids), 'convert': 'USD'}
     coins = requests.get(url, params=p, headers=h).json()['data']
-    result = [__transform_coin_quote(coins.get(id)) for id in ids]
-    return result
+    return [__transform_coin_quote(coins.get(id)) for id in ids]
