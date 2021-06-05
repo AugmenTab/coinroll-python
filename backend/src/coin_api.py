@@ -1,7 +1,11 @@
 #! python3
 
-# 3p Imports
+# PSL Imports
+# import asyncio
 import requests
+
+# 3p Imports
+# import aiohttp
 
 # Internal Imports
 try:
@@ -27,11 +31,11 @@ def __transform_coin_listing(coin):
 
 def __transform_metadata(coin):
     return {
-        "id": coin['id'],
-        "name": coin['name'],
-        "symbol": coin['symbol'],
-        "logo": coin['logo'],
-        "website": coin['urls']['website'] 
+        'id': coin['id'],
+        'name': coin['name'],
+        'symbol': coin['symbol'],
+        'logo': coin['logo'],
+        'website': coin['urls']['website'][0] 
     }
 
 
@@ -51,24 +55,30 @@ def __transform_coin_quote(coin):
     }
 
 
+# @asyncio.coroutine
 def get_coin_listing():
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
-    headers = __get_headers()
-    listing = requests.get(url, params={}, headers=headers).json()['data']
-    return [__transform_coin_listing(coin) for coin in listing]
+    h = __get_headers()
+    listing = requests.get(url, params={}, headers=h).json()['data']
+    result = [__transform_coin_listing(coin) for coin in listing]
+    return result
 
 
+# @asyncio.coroutine
 def get_coin_metadata(ids):
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info'
-    headers = __get_headers()
-    params = {'id': ','.join(ids)}
-    metadata = requests.get(url, params=params, headers=headers).json()['data']
-    return [__transform_metadata(metadata.get(id)) for id in ids]
+    h = __get_headers()
+    p = {'id': ','.join(ids)}
+    metadata = requests.get(url, params=p, headers=h).json()['data']
+    result = [__transform_metadata(metadata.get(id)) for id in ids]
+    return result
 
 
+# @asyncio.coroutine
 def get_coin_quotes(ids):
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
-    headers = __get_headers()
-    params = {'id': ','.join(ids), 'convert': 'USD'}
-    coins = requests.get(url, params=params, headers=headers).json()['data']
-    return [__transform_coin_quote(coins.get(id)) for id in ids]
+    h = __get_headers()
+    p = {'id': ','.join(ids), 'convert': 'USD'}
+    coins = requests.get(url, params=p, headers=h).json()['data']
+    result = [__transform_coin_quote(coins.get(id)) for id in ids]
+    return result
