@@ -9,6 +9,7 @@ import uvicorn
 
 # Internal Imports
 try:
+    from coin_api import get_coin_quotes
     from database import establish_db
 except:
     pass
@@ -23,7 +24,7 @@ def add(a, b):
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return get_coin_quotes(['1','1027'])
 
 
 @app.get("/items/{item_id}")

@@ -43,4 +43,4 @@ def establish_db():
         username=username, 
         password=password
     )
-    __update_coin_list(get_coin_listing({}))
+    __update_coin_list(get_coin_listing())
