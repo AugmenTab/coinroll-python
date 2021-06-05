@@ -83,12 +83,11 @@ def add_watched_coin(id):
         day_change = quote['percent_changes']['day'],
         week_change = quote['percent_changes']['week']
     )
-    print(watch.to_json())
     return watch.save()
 
 
-def remove_watched_coin(coin):
-    pass
+def remove_watched_coin(id):
+    return Watch.objects(market_id=id).first().delete()
 
 
 def __update_coin_list(data):  # tasks
