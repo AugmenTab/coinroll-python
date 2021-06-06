@@ -48,11 +48,23 @@ def get_coin_summary(records, quote):
     }
 
 
-# def get_summary(records, quote):
-#     summaries = [get_coin_summary(record, quote) for record in records]
-#     return {
-#         'total_usd_invested': _,
-#         'total_current_usd_value': _,
-#         'total_profit': _,
-#         'coin_summaries': summaries
-#     }
+def get_summary(records, quotes):
+    coin_groups = {coin: [r for r in records if r['name'] == coin] 
+                   for coin, _ in groupby(records, lambda r: r['name'])}
+    summaries = {q['name']: get_coin_summary(coin_groups[q['name']], q) 
+                 for q in quotes}
+    stripped = [summaries[s] for s in summaries]
+    total_usd_invested = 0
+    total_current_usd_value = 0
+    total_profit = 0
+    for summary in stripped:
+        print(summary)
+        total_usd_invested += summary['usd_invested']
+        total_current_usd_value += summary['current_usd_value']
+        total_profit += summary['total_coin_profit']
+    return {
+        'total_usd_invested': total_usd_invested,
+        'total_current_usd_value': total_current_usd_value,
+        'total_profit': total_profit,
+        'coin_summaries': summaries
+    }

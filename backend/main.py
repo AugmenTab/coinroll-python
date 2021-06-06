@@ -73,16 +73,20 @@ def get_coin_records(coin_name: str):
     return db.get_all_transactions_by_id(id)
 
 
-# @app.get('/summary')
+@app.get('/summary')
+def get_portfolio_summary():
+    records = db.get_all_transactions()
+    ids = list(set(str(record['market_id']) for record in records))
+    quotes = coin_api.get_coin_quotes(ids)
+    return portfolio.get_summary(records, quotes)
 
 
 @app.get('/summary/{coin_name}')
 def get_coin_summary(coin_name: str):
     id = db.get_coin_from_db(coin_name).get('market_id')
     records = db.get_all_transactions_by_id(id)
-    quote = coin_api.get_coin_quotes([str(id)])
-    return portfolio.get_coin_summary(records, quote[0])
-
+    quote = coin_api.get_coin_quotes([str(id)])[0]
+    return portfolio.get_coin_summary(records, quote)
 
 
 if __name__ == '__main__':
