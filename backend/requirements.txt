@@ -1,10 +1,16 @@
+amqp==5.0.6
 asgiref==3.3.4
 astroid==2.4.1
 atomicwrites==1.4.0
 attrs==21.2.0
+billiard==3.6.4.0
+celery==5.1.0
 certifi==2021.5.30
 chardet==4.0.0
-click==8.0.1
+click==7.1.2
+click-didyoumean==0.0.3
+click-plugins==1.1.1
+click-repl==0.2.0
 colorama==0.4.4
 dodgy==0.2.1
 fastapi==0.65.1
@@ -14,12 +20,14 @@ h11==0.12.0
 idna==2.10
 iniconfig==1.1.1
 isort==4.3.21
+kombu==5.1.0
 lazy-object-proxy==1.4.3
 mccabe==0.6.1
 mongoengine==0.23.1
 packaging==20.9
 pep8-naming==0.10.0
 pluggy==0.13.1
+prompt-toolkit==3.0.18
 prospector==1.3.1
 py==1.10.0
 pycodestyle==2.6.0
@@ -34,6 +42,7 @@ pylint-plugin-utils==0.6
 pymongo==3.11.4
 pyparsing==2.4.7
 pytest==6.2.4
+pytz==2021.1
 PyYAML==5.4.1
 requests==2.25.1
 requirements-detector==0.7
@@ -45,4 +54,6 @@ toml==0.10.2
 typing-extensions==3.10.0.0
 urllib3==1.26.5
 uvicorn==0.14.0
+vine==5.0.0
+wcwidth==0.2.5
 wrapt==1.12.1

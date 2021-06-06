@@ -8,8 +8,10 @@ services:
             - "8000:8000"
         depends_on:
             - mongodb
+            - rabbit
+            - rabbitmq
         networks:
-        - mongodb_network
+            - mongodb_network
     mongodb:
         image: mongo
         container_name: mongodb
@@ -55,6 +57,16 @@ services:
             timeout: 10s
             retries: 3
         restart: unless-stopped
+    rabbitmq:
+        image: rabbitmq
+        container_name: rabbit
+        networks:
+            - mongodb_network
+        environment:
+            - RABBITMQ_DEFAULT_USER=rabbit
+            - RABBITMQ_DEFAULT_PASS=password
+        ports:
+            - 5672:5672
 volumes:
     mongodb-data:
         name: mongodb-data

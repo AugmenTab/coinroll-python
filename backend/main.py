@@ -1,9 +1,11 @@
 #! python3
 
 # PSL Imports
+from datetime import timedelta
 from typing import Optional
 
 # 3p Imports
+from celery import Celery
 from fastapi import FastAPI
 from pydantic import BaseModel
 import uvicorn
@@ -17,6 +19,20 @@ import src.portfolio as portfolio
 app = FastAPI()
 
 
+def make_celery():
+    # create context tasks in celery
+    celery = Celery(
+        'celery',
+        broker='amqp://rabbit:password@rabbitmq'
+    )
+    celery.config_from_object('src.config')
+
+    return celery
+
+
+celery_app = make_celery()
+
+
 class Transaction(BaseModel):
     name: str
     quantity: int
@@ -25,6 +41,11 @@ class Transaction(BaseModel):
 class Watch(BaseModel):
     id: int = None
     name: str = None
+
+
+@celery_app.task
+def update_watchlist_prices():
+    print('Updated!')
 
 
 @app.get('/')
