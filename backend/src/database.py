@@ -132,6 +132,11 @@ def get_all_transactions_by_id(id):
     return [record.to_json() for record in records]
 
 
+def get_all_transactions():
+    records = Transaction.objects().order_by('transaction_time')
+    return [record.to_json() for record in records]
+
+
 def __update_coin_list(data):  # tasks
     for x in data:
         coin = Coin(

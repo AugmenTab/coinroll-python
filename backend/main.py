@@ -54,6 +54,11 @@ def buy_coin(buy: Transaction):
 # @app.post('/sell')
 
 
+@app.get('/records')
+def get_all_records():
+    return db.get_all_transactions()
+
+
 @app.get('/records/{coin_name}')
 def get_coin_records(coin_name: str):
     id = db.get_coin_from_db(coin_name).get('market_id')
