@@ -51,8 +51,13 @@ def buy_coin(buy: Transaction):
     return db.create_transaction(id, buy.quantity, 'purchase')
 
 
-# @app.post('/sell') :: market_id, name, symbol, sell_time, price_in_USD, quantity_sold
-# @app.get('/records/{coin_id}')
+# @app.post('/sell')
+
+
+@app.get('/records/{coin_name}')
+def get_coin_records(coin_name: str):
+    id = db.get_coin_from_db(coin_name).get('market_id')
+    return db.get_all_transactions_by_id(id)
 
 
 if __name__ == '__main__':

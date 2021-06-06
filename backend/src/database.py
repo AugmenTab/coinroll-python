@@ -127,6 +127,11 @@ def create_transaction(id, quantity, type):
     return transaction.save()
 
 
+def get_all_transactions_by_id(id):
+    records = Transaction.objects(market_id=id).order_by('transaction_time')
+    return [record.to_json() for record in records]
+
+
 def __update_coin_list(data):  # tasks
     for x in data:
         coin = Coin(
