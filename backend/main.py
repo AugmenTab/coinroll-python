@@ -26,10 +26,6 @@ class Transaction(BaseModel):
     quantity: int
 
 
-def add(a, b):
-    return a + b
-
-
 @app.get('/')
 def get_watchlist():
     return db.get_watchlist()

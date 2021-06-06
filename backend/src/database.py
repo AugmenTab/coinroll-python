@@ -8,8 +8,8 @@ import mongoengine as db
 
 # Internal Imports
 try:
-    from config import username, password, database
-    from coin_api import get_coin_listing, get_coin_metadata, get_coin_quotes
+    from src.config import username, password, database
+    from src.coin_api import get_coin_listing, get_coin_metadata, get_coin_quotes
 except:
     pass
 
