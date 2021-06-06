@@ -82,7 +82,6 @@ class Watch(db.Document):
 
 async def update_watchlist(quotes):  # tasks
     for quote in quotes:
-        # {quote['id']: quote}
         Watch.objects(market_id=quote['id']).update(
             supply = quote['supply'],
             cap = quote['cap'],
@@ -107,9 +106,7 @@ async def get_watchlist():
     return [coin.to_json() for coin in Watch.objects()]
 
 
-def add_watched_coin(_id):
-    metadata = coin_api.get_coin_metadata([str(_id)])[0]
-    quote = coin_api.get_coin_quotes([str(_id)])[0]
+def add_watched_coin(_id, metadata, quote):
     watch = Watch(
         market_id = _id,
         name = metadata['name'],
@@ -132,8 +129,7 @@ def remove_watched_coin(_id):
     return Watch.objects(market_id=_id).first().delete()
 
 
-def create_transaction(_id, quantity, _type):
-    quote = coin_api.get_coin_quotes([str(_id)])[0]
+def create_transaction(_id, quantity, quote, _type):
     transaction = Transaction(
         market_id = _id,
         name = quote['name'],

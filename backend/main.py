@@ -17,6 +17,7 @@ import src.portfolio as portfolio
 
 
 app = FastAPI()
+db.establish_db()
 
 
 def make_celery():
@@ -26,7 +27,6 @@ def make_celery():
         broker='amqp://rabbit:password@rabbitmq'
     )
     celery.config_from_object('src.config')
-    db.establish_db()
     return celery
 
 
@@ -63,7 +63,9 @@ def watch_coin(watch: Watch):
     _id = db.get_coin_from_db(watch.name).get('market_id')
     result_or_default = {'Msg': 'That coin is already being watched.'}
     if not db.get_coin_from_watchlist(_id):
-        result_or_default = db.add_watched_coin(_id)
+        metadata = coin_api.get_coin_metadata([str(_id)])[0]
+        quote = coin_api.get_coin_quotes([str(_id)])[0]
+        result_or_default = db.add_watched_coin(_id, metadata, quote)
     return result_or_default
 
 
@@ -77,7 +79,8 @@ def unwatch_coin(watch: Watch):
 @app.post('/buy')
 def buy_coin(buy: Transaction):
     _id = db.get_coin_from_db(buy.name).get('market_id')
-    return db.create_transaction(_id, buy.quantity, 'purchase')
+    quote = coin_api.get_coin_quotes([str(_id)])[0]
+    return db.create_transaction(_id, buy.quantity, quote, 'purchase')
 
 
 @app.post('/sell')
@@ -86,7 +89,8 @@ def sell_coin(sell: Transaction):
     records = db.get_all_transactions_by_id(_id)
     result_or_default = {'Msg': 'Insufficient coins.'}
     if portfolio.has_sufficient_coins(records, sell.quantity):
-        result_or_default = db.create_transaction(_id, sell.quantity, 'sell')
+        quote = coin_api.get_coin_quotes([str(_id)])[0]
+        result_or_default = db.create_transaction(_id, sell.quantity, quote, 'sell')
     return result_or_default
 
 
