@@ -2,6 +2,7 @@
 
 # PSL Imports
 from typing import Optional
+import asyncio
 
 # 3p Imports
 from celery import Celery
@@ -44,14 +45,17 @@ class Watch(BaseModel):
 
 @celery_app.task
 def update_watchlist_prices():
-    ids = list(set(str(coin['market_id']) for coin in get_watchlist()))
-    db.update_watchlist(coin_api.get_coin_quotes(ids))
+    watchlist = asyncio.run(get_watchlist())
+    ids = list(set(str(coin['market_id']) for coin in watchlist))
+    quotes = asyncio.run(coin_api.get_coin_quotes(ids))
+    asyncio.run(db.update_watchlist(quotes))
     print('Watchlist updated with current crypto prices.')
 
 
 @app.get('/')
-def get_watchlist():
-    return db.get_watchlist()
+async def get_watchlist():
+    results = await db.get_watchlist()
+    return results
 
 
 @app.post('/watch')

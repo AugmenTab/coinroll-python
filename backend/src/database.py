@@ -2,7 +2,7 @@
 
 # PSL Imports
 from datetime import datetime
-# import asyncio
+import asyncio
 
 # 3p Imports
 import mongoengine as db
@@ -80,7 +80,7 @@ class Watch(db.Document):
         }
 
 
-def update_watchlist(quotes):
+async def update_watchlist(quotes):  # tasks
     for quote in quotes:
         # {quote['id']: quote}
         Watch.objects(market_id=quote['id']).update(
@@ -103,7 +103,7 @@ def get_coin_from_watchlist(_id):
     return Watch.objects(market_id=_id).first()
 
 
-def get_watchlist():
+async def get_watchlist():
     return [coin.to_json() for coin in Watch.objects()]
 
 
