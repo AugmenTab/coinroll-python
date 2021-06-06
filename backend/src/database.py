@@ -137,18 +137,6 @@ def get_all_transactions():
     return [record.to_json() for record in records]
 
 
-def ensure_sufficient_coins(id, selling):
-    records = get_all_transactions_by_id(id)
-    owned = 0
-    for record in records:
-        if record['type'] == 'purchase':
-            owned += record['quantity']
-        else:
-            owned -= record['quantity']
-    return owned >= selling
-
-
-
 def __update_coin_list(data):  # tasks
     for x in data:
         coin = Coin(

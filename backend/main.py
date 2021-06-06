@@ -9,8 +9,8 @@ from pydantic import BaseModel
 import uvicorn
 
 # Internal Imports
-from src.coin_api import get_coin_quotes
 import src.database as db
+import src.portfolio as portfolio
 
 
 app = FastAPI()
@@ -54,7 +54,8 @@ def buy_coin(buy: Transaction):
 @app.post('/sell')
 def sell_coin(sell: Transaction):
     id = db.get_coin_from_db(sell.name).get('market_id')
-    if db.ensure_sufficient_coins(id, sell.quantity):
+    records = db.get_all_transactions_by_id(id)
+    if portfolio.has_sufficient_coins(records, sell.quantity):
         return db.create_transaction(id, sell.quantity, 'sell')
     else:
         return {'Msg': 'Insufficient coins.'}
