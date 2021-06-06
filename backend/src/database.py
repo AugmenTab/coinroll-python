@@ -60,6 +60,7 @@ class Watch(db.Document):
     hour_change = db.FloatField()
     day_change = db.FloatField()
     week_change = db.FloatField()
+    last_updated = db.DateTimeField()
 
     def to_json(self):
         return {
@@ -74,7 +75,8 @@ class Watch(db.Document):
             'volume': self.volume,
             'hour_change': self.hour_change,
             'day_change': self.day_change,
-            'week_change': self.week_change
+            'week_change': self.week_change,
+            'last_updated': self.last_updated
         }
 
 
@@ -88,7 +90,8 @@ def update_watchlist(quotes):
             volume = quote['volume'],
             hour_change = quote['percent_changes']['hour'],
             day_change = quote['percent_changes']['day'],
-            week_change = quote['percent_changes']['week']
+            week_change = quote['percent_changes']['week'],
+            last_updated = datetime.utcnow()
         )
 
 
