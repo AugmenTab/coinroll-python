@@ -51,7 +51,13 @@ def buy_coin(buy: Transaction):
     return db.create_transaction(id, buy.quantity, 'purchase')
 
 
-# @app.post('/sell')
+@app.post('/sell')
+def sell_coin(sell: Transaction):
+    id = db.get_coin_from_db(sell.name).get('market_id')
+    if db.ensure_sufficient_coins(id, sell.quantity):
+        return db.create_transaction(id, sell.quantity, 'sell')
+    else:
+        return {'Msg': 'Insufficient coins.'}
 
 
 @app.get('/records')
