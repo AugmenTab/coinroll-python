@@ -9,6 +9,7 @@ from pydantic import BaseModel
 import uvicorn
 
 # Internal Imports
+import src.coin_api as coin_api
 import src.database as db
 import src.portfolio as portfolio
 
@@ -70,6 +71,18 @@ def get_all_records():
 def get_coin_records(coin_name: str):
     id = db.get_coin_from_db(coin_name).get('market_id')
     return db.get_all_transactions_by_id(id)
+
+
+# @app.get('/summary')
+
+
+@app.get('/summary/{coin_name}')
+def get_coin_summary(coin_name: str):
+    id = db.get_coin_from_db(coin_name).get('market_id')
+    records = db.get_all_transactions_by_id(id)
+    quote = coin_api.get_coin_quotes([str(id)])
+    return portfolio.get_coin_summary(records, quote[0])
+
 
 
 if __name__ == '__main__':
