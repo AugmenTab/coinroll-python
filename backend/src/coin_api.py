@@ -9,7 +9,7 @@ import requests
 
 # Internal Imports
 try:
-    from config import api_key as key
+    from src.config import api_key as key
 except:
     pass
 

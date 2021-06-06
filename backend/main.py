@@ -16,14 +16,14 @@ import src.database as db
 app = FastAPI()
 
 
+class Transaction(BaseModel):
+    name: str
+    quantity: int
+
+
 class Watch(BaseModel):
     id: int = None
     name: str = None
-
-
-class Transaction(BaseModel):
-    id: int
-    quantity: int
 
 
 @app.get('/')
@@ -45,7 +45,12 @@ def unwatch_coin(watch: Watch):
     return db.remove_watched_coin(watch.id)
 
 
-# @app.post('/buy') :: market_id, name, symbol, purchase_time, price_in_USD, quantity_bought
+@app.post('/buy')
+def buy_coin(buy: Transaction):
+    id = db.get_coin_from_db(buy.name).get('market_id')
+    return db.create_transaction(id, buy.quantity, 'purchase')
+
+
 # @app.post('/sell') :: market_id, name, symbol, sell_time, price_in_USD, quantity_sold
 # @app.get('/records/{coin_id}')
 

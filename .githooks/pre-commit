@@ -1,2 +1,2 @@
 #!C:\Program\ Files\Git\usr\bin\sh.exe
-cd backend && pipenv run pytest
+# cd backend && pipenv run pytest

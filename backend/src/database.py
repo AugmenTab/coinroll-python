@@ -1,6 +1,7 @@
 #! python3
 
 # PSL Imports
+from datetime import datetime
 # import asyncio
 
 # 3p Imports
@@ -9,7 +10,7 @@ import mongoengine as db
 # Internal Imports
 try:
     from src.config import username, password, database
-    from src.coin_api import get_coin_listing, get_coin_metadata, get_coin_quotes
+    import src.coin_api as coin_api
 except:
     pass
 
@@ -24,6 +25,25 @@ class Coin(db.Document):
             'market_id': self.market_id,
             'name': self.name,
             'symbol': self.symbol,
+        }
+
+
+class Transaction(db.Document):
+    market_id = db.IntField()
+    name = db.StringField()
+    type = db.StringField()
+    transaction_time = db.DateTimeField()
+    price_in_usd = db.FloatField()
+    quantity = db.IntField()
+
+    def to_json(self):
+        return {
+            'market_id': self.market_id,
+            'name': self.name,
+            'type': self.type,
+            'transaction_time': self.transaction_time,
+            'price_in_usd': self.price_in_usd,
+            'quantity': self.quantity
         }
 
 
@@ -71,8 +91,8 @@ def get_watchlist():
 
 
 def add_watched_coin(id):
-    metadata = get_coin_metadata([str(id)])[0]
-    quote = get_coin_quotes([str(id)])[0]
+    metadata = coin_api.get_coin_metadata([str(id)])[0]
+    quote = coin_api.get_coin_quotes([str(id)])[0]
     watch = Watch(
         market_id = id,
         name = metadata['name'],
@@ -94,6 +114,19 @@ def remove_watched_coin(id):
     return Watch.objects(market_id=id).first().delete()
 
 
+def create_transaction(id, quantity, type):
+    quote = coin_api.get_coin_quotes([str(id)])[0]
+    transaction = Transaction(
+        market_id = id,
+        name = quote['name'],
+        type = type,
+        transaction_time = datetime.utcnow(),
+        price_in_usd = quote['price'],
+        quantity = quantity
+    )
+    return transaction.save()
+
+
 def __update_coin_list(data):  # tasks
     for x in data:
         coin = Coin(
@@ -105,7 +138,7 @@ def __update_coin_list(data):  # tasks
         new.update(name=coin.name, symbol=coin.symbol, upsert=True)
 
 
-def establish_db():
+def establish_db(query_api=False):
     db.connect(
         db=database, 
         host='mongodb://mongodb', 
@@ -113,4 +146,5 @@ def establish_db():
         username=username, 
         password=password
     )
-    # __update_coin_list(get_coin_listing())
+    if query_api:
+        __update_coin_list(coin_api.get_coin_listing())
