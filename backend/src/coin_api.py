@@ -10,8 +10,8 @@ import requests
 # Internal Imports
 try:
     from src.config import api_key as key
-except:
-    pass
+except Exception as e:
+    print(e)
 
 
 def __get_headers():

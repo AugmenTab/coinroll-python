@@ -11,8 +11,8 @@ import mongoengine as db
 try:
     from src.config import username, password, database
     import src.coin_api as coin_api
-except:
-    pass
+except Exception as e:
+    print(e)
 
 
 class Coin(db.Document):
@@ -99,19 +99,19 @@ def get_coin_from_db(name):
     return Coin.objects(name=name).first().to_json()
 
 
-def get_coin_from_watchlist(id):
-    return Watch.objects(market_id=id).first()
+def get_coin_from_watchlist(_id):
+    return Watch.objects(market_id=_id).first()
 
 
 def get_watchlist():
     return [coin.to_json() for coin in Watch.objects()]
 
 
-def add_watched_coin(id):
-    metadata = coin_api.get_coin_metadata([str(id)])[0]
-    quote = coin_api.get_coin_quotes([str(id)])[0]
+def add_watched_coin(_id):
+    metadata = coin_api.get_coin_metadata([str(_id)])[0]
+    quote = coin_api.get_coin_quotes([str(_id)])[0]
     watch = Watch(
-        market_id = id,
+        market_id = _id,
         name = metadata['name'],
         symbol = metadata['symbol'],
         logo = metadata['logo'],
@@ -127,16 +127,16 @@ def add_watched_coin(id):
     return watch.save()
 
 
-def remove_watched_coin(id):
-    return Watch.objects(market_id=id).first().delete()
+def remove_watched_coin(_id):
+    return Watch.objects(market_id=_id).first().delete()
 
 
-def create_transaction(id, quantity, type):
-    quote = coin_api.get_coin_quotes([str(id)])[0]
+def create_transaction(_id, quantity, _type):
+    quote = coin_api.get_coin_quotes([str(_id)])[0]
     transaction = Transaction(
-        market_id = id,
+        market_id = _id,
         name = quote['name'],
-        type = type,
+        type = _type,
         transaction_time = datetime.utcnow(),
         price_in_usd = quote['price'],
         quantity = quantity
@@ -144,8 +144,8 @@ def create_transaction(id, quantity, type):
     return transaction.save()
 
 
-def get_all_transactions_by_id(id):
-    records = Transaction.objects(market_id=id).order_by('transaction_time')
+def get_all_transactions_by_id(_id):
+    records = Transaction.objects(market_id=_id).order_by('transaction_time')
     return [record.to_json() for record in records]
 
 

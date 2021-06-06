@@ -1,9 +1,5 @@
 #! python3
 
-# PSL Imports
-from datetime import timedelta
-from typing import Optional
-
 # 3p Imports
 from celery import Celery
 from fastapi import FastAPI
@@ -57,9 +53,11 @@ def get_watchlist():
 
 @app.post('/watch')
 def watch_coin(watch: Watch):
-    id = db.get_coin_from_db(watch.name).get('market_id')
-    if not db.get_coin_from_watchlist(id):
-        return db.add_watched_coin(id)
+    _id = db.get_coin_from_db(watch.name).get('market_id')
+    result_or_default = {'Msg': 'That coin is already being watched.'}
+    if not db.get_coin_from_watchlist(_id):
+        result_or_default = db.add_watched_coin(_id)
+    return result_or_default
 
 
 @app.delete('/watch')
@@ -71,18 +69,18 @@ def unwatch_coin(watch: Watch):
 
 @app.post('/buy')
 def buy_coin(buy: Transaction):
-    id = db.get_coin_from_db(buy.name).get('market_id')
-    return db.create_transaction(id, buy.quantity, 'purchase')
+    _id = db.get_coin_from_db(buy.name).get('market_id')
+    return db.create_transaction(_id, buy.quantity, 'purchase')
 
 
 @app.post('/sell')
 def sell_coin(sell: Transaction):
-    id = db.get_coin_from_db(sell.name).get('market_id')
-    records = db.get_all_transactions_by_id(id)
+    _id = db.get_coin_from_db(sell.name).get('market_id')
+    records = db.get_all_transactions_by_id(_id)
+    result_or_default = {'Msg': 'Insufficient coins.'}
     if portfolio.has_sufficient_coins(records, sell.quantity):
-        return db.create_transaction(id, sell.quantity, 'sell')
-    else:
-        return {'Msg': 'Insufficient coins.'}
+        result_or_default = db.create_transaction(_id, sell.quantity, 'sell')
+    return result_or_default
 
 
 @app.get('/records')
@@ -92,8 +90,8 @@ def get_all_records():
 
 @app.get('/records/{coin_name}')
 def get_coin_records(coin_name: str):
-    id = db.get_coin_from_db(coin_name).get('market_id')
-    return db.get_all_transactions_by_id(id)
+    _id = db.get_coin_from_db(coin_name).get('market_id')
+    return db.get_all_transactions_by_id(_id)
 
 
 @app.get('/summary')
@@ -106,9 +104,9 @@ def get_portfolio_summary():
 
 @app.get('/summary/{coin_name}')
 def get_coin_summary(coin_name: str):
-    id = db.get_coin_from_db(coin_name).get('market_id')
-    records = db.get_all_transactions_by_id(id)
-    quote = coin_api.get_coin_quotes([str(id)])[0]
+    _id = db.get_coin_from_db(coin_name).get('market_id')
+    records = db.get_all_transactions_by_id(_id)
+    quote = coin_api.get_coin_quotes([str(_id)])[0]
     return portfolio.get_coin_summary(records, quote)
 
 
