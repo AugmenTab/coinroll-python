@@ -78,6 +78,20 @@ class Watch(db.Document):
         }
 
 
+def update_watchlist(quotes):
+    for quote in quotes:
+        # {quote['id']: quote}
+        Watch.objects(market_id=quote['id']).update(
+            supply = quote['supply'],
+            cap = quote['cap'],
+            price = quote['price'],
+            volume = quote['volume'],
+            hour_change = quote['percent_changes']['hour'],
+            day_change = quote['percent_changes']['day'],
+            week_change = quote['percent_changes']['week']
+        )
+
+
 def get_coin_from_db(name):
     return Coin.objects(name=name).first().to_json()
 

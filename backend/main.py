@@ -26,7 +26,7 @@ def make_celery():
         broker='amqp://rabbit:password@rabbitmq'
     )
     celery.config_from_object('src.config')
-
+    db.establish_db()
     return celery
 
 
@@ -45,7 +45,9 @@ class Watch(BaseModel):
 
 @celery_app.task
 def update_watchlist_prices():
-    print('Updated!')
+    ids = list(set(str(coin['market_id']) for coin in get_watchlist()))
+    db.update_watchlist(coin_api.get_coin_quotes(ids))
+    print('Watchlist updated with current crypto prices.')
 
 
 @app.get('/')
@@ -111,5 +113,4 @@ def get_coin_summary(coin_name: str):
 
 
 if __name__ == '__main__':
-    db.establish_db()
     uvicorn.run(app, port=8000, host='0.0.0.0')
