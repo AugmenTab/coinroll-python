@@ -1,5 +1,8 @@
 #! python3
 
+# PSL Imports
+from typing import Optional
+
 # 3p Imports
 from celery import Celery
 from fastapi import FastAPI
@@ -35,8 +38,8 @@ class Transaction(BaseModel):
 
 
 class Watch(BaseModel):
-    id: int = None
-    name: str = None
+    market_id: Optional[int] = None
+    name: str
 
 
 @celery_app.task
@@ -62,9 +65,9 @@ def watch_coin(watch: Watch):
 
 @app.delete('/watch')
 def unwatch_coin(watch: Watch):
-    if not watch.id:
-        watch.id = db.get_coin_from_db(watch.name).get('market_id')
-    return db.remove_watched_coin(watch.id)
+    if not watch.market_id:
+        watch.market_id = db.get_coin_from_db(watch.name).get('market_id')
+    return db.remove_watched_coin(watch.market_id)
 
 
 @app.post('/buy')

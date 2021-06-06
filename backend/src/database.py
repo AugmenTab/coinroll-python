@@ -122,7 +122,8 @@ def add_watched_coin(_id):
         volume = quote['volume'],
         hour_change = quote['percent_changes']['hour'],
         day_change = quote['percent_changes']['day'],
-        week_change = quote['percent_changes']['week']
+        week_change = quote['percent_changes']['week'],
+        last_updated = datetime.utcnow()
     )
     return watch.save()
 
