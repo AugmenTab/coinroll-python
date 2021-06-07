@@ -2,6 +2,7 @@
 
 # PSL Imports
 from typing import Optional
+import asyncio
 
 # 3p Imports
 from celery import Celery
@@ -16,6 +17,7 @@ import src.portfolio as portfolio
 
 
 app = FastAPI()
+db.establish_db()
 
 
 def make_celery():
@@ -25,7 +27,6 @@ def make_celery():
         broker='amqp://rabbit:password@rabbitmq'
     )
     celery.config_from_object('src.config')
-    db.establish_db()
     return celery
 
 
@@ -44,72 +45,96 @@ class Watch(BaseModel):
 
 @celery_app.task
 def update_watchlist_prices():
-    ids = list(set(str(coin['market_id']) for coin in get_watchlist()))
-    db.update_watchlist(coin_api.get_coin_quotes(ids))
+    watchlist = asyncio.run(get_watchlist())
+    ids = list(set(str(coin['market_id']) for coin in watchlist))
+    quotes = asyncio.run(coin_api.get_coin_quotes(ids))
+    asyncio.run(db.update_watchlist(quotes))
     print('Watchlist updated with current crypto prices.')
 
 
 @app.get('/')
-def get_watchlist():
-    return db.get_watchlist()
+async def get_watchlist():
+    results = await db.get_watchlist()
+    return results
 
 
 @app.post('/watch')
-def watch_coin(watch: Watch):
-    _id = db.get_coin_from_db(watch.name).get('market_id')
+async def watch_coin(watch: Watch):
+    coin = await db.get_coin_from_db(watch.name)
+    _id = coin.get('market_id')
     result_or_default = {'Msg': 'That coin is already being watched.'}
-    if not db.get_coin_from_watchlist(_id):
-        result_or_default = db.add_watched_coin(_id)
+    coin_in_watchlist = await db.get_coin_from_watchlist(_id)
+    if not coin_in_watchlist:
+        raw_metadata = await coin_api.get_coin_metadata([str(_id)])
+        metadata = raw_metadata[0]
+        raw_quote = await coin_api.get_coin_quotes([str(_id)])
+        quote = raw_quote[0]
+        result_or_default = await db.add_watched_coin(_id, metadata, quote)
     return result_or_default
 
 
 @app.delete('/watch')
-def unwatch_coin(watch: Watch):
+async def unwatch_coin(watch: Watch):
     if not watch.market_id:
-        watch.market_id = db.get_coin_from_db(watch.name).get('market_id')
-    return db.remove_watched_coin(watch.market_id)
+        coin = await db.get_coin_from_db(watch.name)
+        watch.market_id = coin.get('market_id')
+    results = await db.remove_watched_coin(watch.market_id)
+    return results
 
 
 @app.post('/buy')
-def buy_coin(buy: Transaction):
-    _id = db.get_coin_from_db(buy.name).get('market_id')
-    return db.create_transaction(_id, buy.quantity, 'purchase')
+async def buy_coin(buy: Transaction):
+    coin = await db.get_coin_from_db(buy.name)
+    _id = coin.get('market_id')
+    raw_quote = await coin_api.get_coin_quotes([str(_id)])
+    quote = raw_quote[0]
+    result = await db.create_transaction(_id, buy.quantity, quote, 'purchase')
+    return result
 
 
 @app.post('/sell')
-def sell_coin(sell: Transaction):
-    _id = db.get_coin_from_db(sell.name).get('market_id')
-    records = db.get_all_transactions_by_id(_id)
+async def sell_coin(sell: Transaction):
+    coin = await db.get_coin_from_db(sell.name)
+    _id = coin.get('market_id')
+    records = await db.get_all_transactions_by_id(_id)
     result_or_default = {'Msg': 'Insufficient coins.'}
     if portfolio.has_sufficient_coins(records, sell.quantity):
-        result_or_default = db.create_transaction(_id, sell.quantity, 'sell')
+        raw_quote = await coin_api.get_coin_quotes([str(_id)])
+        quote = raw_quote[0]
+        qty = sell.quantity
+        result_or_default = await db.create_transaction(_id, qty, quote, 'sell')
     return result_or_default
 
 
 @app.get('/records')
-def get_all_records():
-    return db.get_all_transactions()
+async def get_all_records():
+    records = await db.get_all_transactions()
+    return records
 
 
 @app.get('/records/{coin_name}')
-def get_coin_records(coin_name: str):
-    _id = db.get_coin_from_db(coin_name).get('market_id')
-    return db.get_all_transactions_by_id(_id)
+async def get_coin_records(coin_name: str):
+    coin = await db.get_coin_from_db(coin_name)
+    _id = coin.get('market_id')
+    transactions = await db.get_all_transactions_by_id(_id)
+    return transactions
 
 
 @app.get('/summary')
-def get_portfolio_summary():
-    records = db.get_all_transactions()
+async def get_portfolio_summary():
+    records = await db.get_all_transactions()
     ids = list(set(str(record['market_id']) for record in records))
-    quotes = coin_api.get_coin_quotes(ids)
+    quotes = await coin_api.get_coin_quotes(ids)
     return portfolio.get_summary(records, quotes)
 
 
 @app.get('/summary/{coin_name}')
-def get_coin_summary(coin_name: str):
-    _id = db.get_coin_from_db(coin_name).get('market_id')
-    records = db.get_all_transactions_by_id(_id)
-    quote = coin_api.get_coin_quotes([str(_id)])[0]
+async def get_coin_summary(coin_name: str):
+    coin = await db.get_coin_from_db(coin_name)
+    _id = coin.get('market_id')
+    records = await db.get_all_transactions_by_id(_id)
+    raw_quote = await coin_api.get_coin_quotes([str(_id)])
+    quote = raw_quote[0]
     return portfolio.get_coin_summary(records, quote)
 
 

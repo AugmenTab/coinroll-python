@@ -2,7 +2,7 @@
 
 # PSL Imports
 from datetime import datetime
-# import asyncio
+import asyncio
 
 # 3p Imports
 import mongoengine as db
@@ -80,9 +80,8 @@ class Watch(db.Document):
         }
 
 
-def update_watchlist(quotes):
+async def update_watchlist(quotes):  # tasks
     for quote in quotes:
-        # {quote['id']: quote}
         Watch.objects(market_id=quote['id']).update(
             supply = quote['supply'],
             cap = quote['cap'],
@@ -95,21 +94,19 @@ def update_watchlist(quotes):
         )
 
 
-def get_coin_from_db(name):
+async def get_coin_from_db(name):
     return Coin.objects(name=name).first().to_json()
 
 
-def get_coin_from_watchlist(_id):
+async def get_coin_from_watchlist(_id):
     return Watch.objects(market_id=_id).first()
 
 
-def get_watchlist():
+async def get_watchlist():
     return [coin.to_json() for coin in Watch.objects()]
 
 
-def add_watched_coin(_id):
-    metadata = coin_api.get_coin_metadata([str(_id)])[0]
-    quote = coin_api.get_coin_quotes([str(_id)])[0]
+async def add_watched_coin(_id, metadata, quote):
     watch = Watch(
         market_id = _id,
         name = metadata['name'],
@@ -128,12 +125,11 @@ def add_watched_coin(_id):
     return watch.save()
 
 
-def remove_watched_coin(_id):
+async def remove_watched_coin(_id):
     return Watch.objects(market_id=_id).first().delete()
 
 
-def create_transaction(_id, quantity, _type):
-    quote = coin_api.get_coin_quotes([str(_id)])[0]
+async def create_transaction(_id, quantity, quote, _type):
     transaction = Transaction(
         market_id = _id,
         name = quote['name'],
@@ -145,12 +141,12 @@ def create_transaction(_id, quantity, _type):
     return transaction.save()
 
 
-def get_all_transactions_by_id(_id):
+async def get_all_transactions_by_id(_id):
     records = Transaction.objects(market_id=_id).order_by('transaction_time')
     return [record.to_json() for record in records]
 
 
-def get_all_transactions():
+async def get_all_transactions():
     records = Transaction.objects().order_by('transaction_time')
     return [record.to_json() for record in records]
 

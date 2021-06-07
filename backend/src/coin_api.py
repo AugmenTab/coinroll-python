@@ -1,11 +1,11 @@
 #! python3
 
 # PSL Imports
-# import asyncio
-import requests
+import asyncio
 
 # 3p Imports
-# import aiohttp
+import aiohttp
+import requests
 
 # Internal Imports
 try:
@@ -55,7 +55,6 @@ def __transform_coin_quote(coin):
     }
 
 
-# @asyncio.coroutine
 def get_coin_listing():
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
     h = __get_headers()
@@ -63,19 +62,21 @@ def get_coin_listing():
     return [__transform_coin_listing(coin) for coin in listing]
 
 
-# @asyncio.coroutine
-def get_coin_metadata(ids):
+async def get_coin_metadata(ids):
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info'
     h = __get_headers()
     p = {'id': ','.join(ids)}
-    metadata = requests.get(url, params=p, headers=h).json()['data']
-    return [__transform_metadata(metadata.get(id)) for id in ids]
+    async with aiohttp.ClientSession() as session:
+        metadata_response = await session.get(url, params=p, headers=h)
+        metadata = await metadata_response.json()
+    return [__transform_metadata(m) for _, m in metadata['data'].items()]
 
 
-# @asyncio.coroutine
-def get_coin_quotes(ids):
+async def get_coin_quotes(ids):
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
     h = __get_headers()
     p = {'id': ','.join(ids), 'convert': 'USD'}
-    coins = requests.get(url, params=p, headers=h).json()['data']
-    return [__transform_coin_quote(coins.get(id)) for id in ids]
+    async with aiohttp.ClientSession() as session:
+        coins_response = await session.get(url, params=p, headers=h)
+        coins = await coins_response.json()
+    return [__transform_coin_quote(c) for _, c in coins['data'].items()]
