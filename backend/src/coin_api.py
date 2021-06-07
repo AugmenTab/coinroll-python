@@ -62,12 +62,14 @@ def get_coin_listing():
     return [__transform_coin_listing(coin) for coin in listing]
 
 
-def get_coin_metadata(ids):
+async def get_coin_metadata(ids):
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info'
     h = __get_headers()
     p = {'id': ','.join(ids)}
-    metadata = requests.get(url, params=p, headers=h).json()['data']
-    return [__transform_metadata(metadata.get(id)) for id in ids]
+    async with aiohttp.ClientSession() as session:
+        metadata_response = await session.get(url, params=p, headers=h)
+        metadata = await metadata_response.json()
+    return [__transform_metadata(m) for _, m in metadata['data'].items()]
 
 
 async def get_coin_quotes(ids):

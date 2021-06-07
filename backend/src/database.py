@@ -94,11 +94,11 @@ async def update_watchlist(quotes):  # tasks
         )
 
 
-def get_coin_from_db(name):
+async def get_coin_from_db(name):
     return Coin.objects(name=name).first().to_json()
 
 
-def get_coin_from_watchlist(_id):
+async def get_coin_from_watchlist(_id):
     return Watch.objects(market_id=_id).first()
 
 
@@ -106,7 +106,7 @@ async def get_watchlist():
     return [coin.to_json() for coin in Watch.objects()]
 
 
-def add_watched_coin(_id, metadata, quote):
+async def add_watched_coin(_id, metadata, quote):
     watch = Watch(
         market_id = _id,
         name = metadata['name'],
@@ -125,11 +125,11 @@ def add_watched_coin(_id, metadata, quote):
     return watch.save()
 
 
-def remove_watched_coin(_id):
+async def remove_watched_coin(_id):
     return Watch.objects(market_id=_id).first().delete()
 
 
-def create_transaction(_id, quantity, quote, _type):
+async def create_transaction(_id, quantity, quote, _type):
     transaction = Transaction(
         market_id = _id,
         name = quote['name'],
@@ -141,12 +141,12 @@ def create_transaction(_id, quantity, quote, _type):
     return transaction.save()
 
 
-def get_all_transactions_by_id(_id):
+async def get_all_transactions_by_id(_id):
     records = Transaction.objects(market_id=_id).order_by('transaction_time')
     return [record.to_json() for record in records]
 
 
-def get_all_transactions():
+async def get_all_transactions():
     records = Transaction.objects().order_by('transaction_time')
     return [record.to_json() for record in records]
 
