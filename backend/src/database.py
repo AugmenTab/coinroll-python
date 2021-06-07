@@ -80,6 +80,17 @@ class Watch(db.Document):
         }
 
 
+def __update_coin_list(data):  # tasks
+    for x in data:
+        coin = Coin(
+            market_id = x['id'],
+            name = x['name'],
+            symbol = x['symbol']
+        )
+        new = Coin.objects(market_id=coin.market_id)
+        new.update(name=coin.name, symbol=coin.symbol, upsert=True)
+
+
 async def update_watchlist(quotes):  # tasks
     for quote in quotes:
         Watch.objects(market_id=quote['id']).update(
@@ -141,25 +152,14 @@ async def create_transaction(_id, quantity, quote, _type):
     return transaction.save()
 
 
-async def get_all_transactions_by_id(_id):
-    records = Transaction.objects(market_id=_id).order_by('transaction_time')
-    return [record.to_json() for record in records]
-
-
 async def get_all_transactions():
     records = Transaction.objects().order_by('transaction_time')
     return [record.to_json() for record in records]
 
 
-def __update_coin_list(data):  # tasks
-    for x in data:
-        coin = Coin(
-            market_id = x['id'],
-            name = x['name'],
-            symbol = x['symbol']
-        )
-        new = Coin.objects(market_id=coin.market_id)
-        new.update(name=coin.name, symbol=coin.symbol, upsert=True)
+async def get_all_transactions_by_id(_id):
+    records = Transaction.objects(market_id=_id).order_by('transaction_time')
+    return [record.to_json() for record in records]
 
 
 def establish_db(query_api=False):

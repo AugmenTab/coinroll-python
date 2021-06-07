@@ -29,16 +29,6 @@ def __transform_coin_listing(coin):
     }
 
 
-def __transform_metadata(coin):
-    return {
-        'id': coin['id'],
-        'name': coin['name'],
-        'symbol': coin['symbol'],
-        'logo': coin['logo'],
-        'website': coin['urls']['website'][0] 
-    }
-
-
 def __transform_coin_quote(coin):
     return {
         'id': coin['id'],
@@ -52,6 +42,16 @@ def __transform_coin_quote(coin):
             'day': coin['quote']['USD']['percent_change_24h'],
             'week': coin['quote']['USD']['percent_change_7d']
         }
+    }
+
+
+def __transform_metadata(coin):
+    return {
+        'id': coin['id'],
+        'name': coin['name'],
+        'symbol': coin['symbol'],
+        'logo': coin['logo'],
+        'website': coin['urls']['website'][0] 
     }
 
 

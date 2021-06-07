@@ -32,10 +32,6 @@ def __get_total_coin_profit(records):
     return profit
 
 
-def has_sufficient_coins(records, selling):
-    return __get_coin_count(records) >= selling
-
-
 def get_coin_summary(records, quote):
     spent = [r['quantity'] * r['price_in_usd'] 
              for r in records if r['type'] == 'purchase']
@@ -49,6 +45,7 @@ def get_coin_summary(records, quote):
 
 
 def get_summary(records, quotes):
+    print(records)
     coin_groups = {coin: [r for r in records if r['name'] == coin] 
                    for coin, _ in groupby(records, lambda r: r['name'])}
     summaries = {q['name']: get_coin_summary(coin_groups[q['name']], q) 
@@ -68,3 +65,8 @@ def get_summary(records, quotes):
         'total_profit': total_profit,
         'coin_summaries': summaries
     }
+
+
+def has_sufficient_coins(records, selling):
+    return __get_coin_count(records) >= selling
+
