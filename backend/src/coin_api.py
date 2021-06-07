@@ -1,7 +1,7 @@
 #! python3
 
 # PSL Imports
-import asyncio
+# import asyncio
 
 # 3p Imports
 import aiohttp
@@ -60,6 +60,12 @@ def __transform_metadata(coin):
 
 
 def get_coin_listing():
+    """
+    This function retrieves a complete list of all available cryptocurrencies on
+    the market from the MarketCoinCap API.
+
+    :return: A complete list of all available cryptocurrencies on the market.
+    """
     url = __construct_url('map')
     h = __get_headers()
     listing = requests.get(url, params={}, headers=h).json()['data']
@@ -67,6 +73,13 @@ def get_coin_listing():
 
 
 async def get_coin_metadata(ids):
+    """
+    This function retrieves the metadata for a list of cryptocurrencies.
+
+    :param ids: A list of IDs (each corresponding to the ID from the
+    MarketCoinCap API used for this project).
+    :return: The metadata for the requested cryptocurrencies.
+    """
     url = __construct_url('info')
     h = __get_headers()
     p = {'id': ','.join(ids)}
@@ -77,6 +90,14 @@ async def get_coin_metadata(ids):
 
 
 async def get_coin_quotes(ids):
+    """
+    This function retrieves current price information for a list of
+    cryptocurrencies.
+
+    :param ids: A list of IDs (each corresponding to the ID from the
+    MarketCoinCap API used for this project).
+    :return: The price information for the requested cryptocurrencies.
+    """
     url = __construct_url('quotes/latest')
     h = __get_headers()
     p = {'id': ','.join(ids), 'convert': 'USD'}
