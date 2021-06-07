@@ -41,6 +41,7 @@ Below is a list of all the important technology used in the production of this a
 * [Prospector](https://pypi.org/project/prospector/): The linter requested for this project.
 * [Docker](https://www.docker.com/): The entire app lives in Docker containers managed using the Docker Desktop app for Windows.
 * [pipenv](https://pipenv.pypa.io/en/latest/): My virtual environment and package manager of choice.
+* [Trello](https://trello.com/): My personal kanban board for the project lives here.
 
 ### Code Quality &amp; Continuous Integration
 
@@ -67,7 +68,7 @@ Below is a list of all the important technology used in the production of this a
 
 ## Requirements
 
-Software that needs to be installed. Docker, docker-compose, pipenv.
+Software that needs to be installed. Python, Docker, docker-compose, pipenv.
 
 Required accounts for the API.
 
@@ -89,4 +90,14 @@ Starting up and tearing down the docker compose.
 
 ## Future Improvements
 
-Things I wanted to get to, but didn't have the time for.
+Below is a list of improvements that I wanted to add into the application, but haven't yet had the time to do. These should make their way into the project in the near future.
+
+* Make more of the app asynchronous.
+    * I wanted to make the database update that happens upon launch an asynchronous task, but it proved too challenging to implement in the time allotted.
+    * A few of the application functions were prime candidates for asyncio's Tasks. Namely, these were the `update_coin_list` and `update_watchlist` functions in the [database](backend/src/database.py) module.
+* I would have liked to have spent more time exploring Pydantic. I tend to prefer static languages, so working with libraries that provide type hints and data validation in dynamic languages like Python only serve to make me that much more comfortable.
+* I had originally intended for the application to have a frontend made using either [Dash](https://plotly.com/dash/) or [Elm](https://elm-lang.org/).
+* Had I more time, and had accomplished a frontend, I would have standardized the information the API returns, likely using ResponseModel.
+* Another stretch goal that would have been useful would be to send log data to InfluxDB.
+* I wrote pydocs comments for the application, but something I will be adding later will be a CI/CD pipeline to generate FastAPI docs and push them to GitHub.
+* More tests are always welcome, so another idea I had was to create a mock-up coin API in order to do more automated testing without having to rely on the CoinMarketCap API.
