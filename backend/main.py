@@ -16,6 +16,10 @@ import src.database as db
 import src.portfolio as portfolio
 
 
+app = FastAPI()
+db.establish_db()
+
+
 def make_celery():
     # create context tasks in celery
     celery = Celery(
@@ -26,6 +30,9 @@ def make_celery():
     return celery
 
 
+celery_app = make_celery()
+
+
 @celery_app.task
 def update_watchlist_prices():
     watchlist = asyncio.run(get_watchlist())
@@ -33,11 +40,6 @@ def update_watchlist_prices():
     quotes = asyncio.run(coin_api.get_coin_quotes(ids))
     asyncio.run(db.update_watchlist(quotes))
     print('Watchlist updated with current crypto prices.')
-
-
-app = FastAPI()
-celery_app = make_celery()
-db.establish_db()
 
 
 class Transaction(BaseModel):
