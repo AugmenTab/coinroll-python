@@ -33,6 +33,16 @@ def __get_total_coin_profit(records):
 
 
 def get_coin_summary(records, quote):
+    """
+    This function formats a provided transaction history and provided price
+    information for a given cryptocurrency in the user's portfolio into a
+    summary for that cryptocurrency.
+
+    :param records: The user's history of transaction records for a given
+    cryptocurrency.
+    :param quote: The current financial information for the cryptocurrency.
+    :return: The portfolio summary for the given cryptocurrency.
+    """
     spent = [r['quantity'] * r['price_in_usd'] 
              for r in records if r['type'] == 'purchase']
     current_coins = __get_coin_count(records)
@@ -45,6 +55,16 @@ def get_coin_summary(records, quote):
 
 
 def get_summary(records, quotes):
+    """
+    This function formats a provided transaction history and provided price
+    information for all cryptocurrencies in the transaction history into a
+    complete portfolio summary.
+
+    :param records: The user's complete history of transaction records.
+    :param quotes: The current financial information for each cryptocurrency the
+    user currently owns.
+    :return: The complete portfolio summary.
+    """
     coin_groups = {coin: [r for r in records if r['name'] == coin] 
                    for coin, _ in groupby(records, lambda r: r['name'])}
     summaries = {q['name']: get_coin_summary(coin_groups[q['name']], q) 
@@ -66,5 +86,14 @@ def get_summary(records, quotes):
 
 
 def has_sufficient_coins(records, selling):
-    return __get_coin_count(records) >= selling
+    """
+    This function determines whether the user has sufficient stock of a given
+    cryptocurrency in their portfolio to make a sale.
 
+    :param records: The transaction records for the cryptocurrency the user
+    wishes to sell.
+    :param selling: The quantity of said cryptocurrency the user wishes to sell.
+    :return: The boolean value for whether the user has sufficient stock of the
+    cryptocurrency in order to make the sale.
+    """
+    return __get_coin_count(records) >= selling
