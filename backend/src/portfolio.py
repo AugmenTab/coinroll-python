@@ -9,7 +9,7 @@ def __get_coin_count(records):
     for record in records:
         if record['type'] == 'purchase':
             owned += record['quantity']
-        else:
+        elif record['type'] == 'sell':
             owned -= record['quantity']
     return owned
 

@@ -16,6 +16,11 @@ except Exception as e:
 
 
 class Coin(db.Document):
+    """
+    ___
+    
+    :param:
+    """
     market_id = db.IntField()
     name = db.StringField()
     symbol = db.StringField()
@@ -80,7 +85,7 @@ class Watch(db.Document):
         }
 
 
-def __update_coin_list(data):  # tasks
+def update_coin_list(data):  # tasks
     for x in data:
         coin = Coin(
             market_id = x['id'],
@@ -162,7 +167,7 @@ async def get_all_transactions_by_id(_id):
     return [record.to_json() for record in records]
 
 
-def establish_db(query_api=False):
+def connect_to_db():
     db.connect(
         db=database, 
         host='mongodb://mongodb', 
@@ -170,5 +175,3 @@ def establish_db(query_api=False):
         username=username, 
         password=password
     )
-    if query_api:
-        __update_coin_list(coin_api.get_coin_listing())

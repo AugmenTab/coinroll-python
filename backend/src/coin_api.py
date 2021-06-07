@@ -14,6 +14,10 @@ except Exception as e:
     print(e)
 
 
+def __construct_url(endpoint):
+    return f'https://pro-api.coinmarketcap.com/v1/cryptocurrency/{endpoint}'
+
+
 def __get_headers():
     return {
         'X-CMC_PRO_API_KEY': key,
@@ -56,14 +60,14 @@ def __transform_metadata(coin):
 
 
 def get_coin_listing():
-    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
+    url = __construct_url('map')
     h = __get_headers()
     listing = requests.get(url, params={}, headers=h).json()['data']
     return [__transform_coin_listing(coin) for coin in listing]
 
 
 async def get_coin_metadata(ids):
-    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/info'
+    url = __construct_url('info')
     h = __get_headers()
     p = {'id': ','.join(ids)}
     async with aiohttp.ClientSession() as session:
@@ -73,7 +77,7 @@ async def get_coin_metadata(ids):
 
 
 async def get_coin_quotes(ids):
-    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+    url = __construct_url('quotes/latest')
     h = __get_headers()
     p = {'id': ','.join(ids), 'convert': 'USD'}
     async with aiohttp.ClientSession() as session:
