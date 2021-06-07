@@ -17,6 +17,14 @@ import src.portfolio as portfolio
 
 
 def initialize_db(query_api=False):
+    """
+    This function initializes the database, and optionally updates the database
+    with a current selection of cryptocurrencies available on the market.
+
+    :param query_api: A boolean indicating whether the database should be
+    updated with a selection of current cryptocurrencies available.
+    :return: None
+    """
     db.connect_to_db()
     if query_api:
         db.update_coin_list(coin_api.get_coin_listing())
@@ -87,13 +95,20 @@ async def get_watchlist():
     """
     This function requests the user's watchlist from the database.
 
-    :return: Returns the user's watchlist.
+    :return: The user's watchlist.
     """
     return await db.get_watchlist()
 
 
 @app.post('/watch')
 async def watch_coin(watch: Watch):
+    """
+    This function allows the user to add a new cryptocurrency to their watchlist.
+
+    :param watch: The Watch object representing the desired cryptocurrency.
+    :return: Either a status message from the database, or a message stating the
+    coin is already on the watchlist.
+    """
     coin = await db.get_coin_from_db(watch.name)
     _id = coin.get('market_id')
     coin_in_watchlist = await db.get_coin_from_watchlist(_id)
@@ -108,6 +123,13 @@ async def watch_coin(watch: Watch):
 
 @app.delete('/watch')
 async def unwatch_coin(watch: Watch):
+    """
+    This function allows the user to remove a cryptocurrency from their
+    watchlist.
+
+    :param watch: The Watch object representing the desired cryptocurrency.
+    :return: The status message from the database.
+    """
     if not watch.market_id:
         coin = await db.get_coin_from_db(watch.name)
         watch.market_id = coin.get('market_id')
@@ -116,6 +138,12 @@ async def unwatch_coin(watch: Watch):
 
 @app.post('/buy')
 async def buy_coin(buy: Transaction):
+    """
+    This function allows the user to "purchase" a cryptocurrency.
+
+    :param buy: The Transaction object representing the desired purchase order.
+    :return: The status message from the database.
+    """
     coin = await db.get_coin_from_db(buy.name)
     _id = coin.get('market_id')
     raw_quote = await coin_api.get_coin_quotes([str(_id)])
@@ -125,6 +153,13 @@ async def buy_coin(buy: Transaction):
 
 @app.post('/sell')
 async def sell_coin(sell: Transaction):
+    """
+    This function allows the user to "sell" a cryptocurrency.
+
+    :param sell: The Transaction object representing the desired sell order.
+    :return: Either the status message from the database, or a message stating
+    the user has insufficient coins.
+    """
     coin = await db.get_coin_from_db(sell.name)
     _id = coin.get('market_id')
     records = await db.get_all_transactions_by_id(_id)
@@ -138,11 +173,25 @@ async def sell_coin(sell: Transaction):
 
 @app.get('/records')
 async def get_all_records():
+    """
+    This function retrieves all transaction records from the database.
+
+    :return: The user's complete transaction history.
+    """
     return await db.get_all_transactions()
 
 
 @app.get('/records/{coin_name}')
 async def get_coin_records(coin_name: str):
+    """
+    This function retrieves all transaction records for a specific
+    cryptocurrency from the database.
+
+    :param coin_name: The name of the cryptocurrency for which the user is
+    requesting records.
+    :return: The user's complete transaction history for the stated 
+    cryptocurrency.
+    """
     coin = await db.get_coin_from_db(coin_name)
     _id = coin.get('market_id')
     return await db.get_all_transactions_by_id(_id)
@@ -150,6 +199,13 @@ async def get_coin_records(coin_name: str):
 
 @app.get('/summary')
 async def get_portfolio_summary():
+    """
+    This function retrieves a complete summary of the user's portfolio,
+    including a per-cryptocurrency summary for each cryptocurrency the user has
+    "purchased."
+
+    :return: The user's cryptocurrency investment portfolio.
+    """
     records = await db.get_all_transactions()
     ids = list(set(str(record['market_id']) for record in records))
     quotes = await coin_api.get_coin_quotes(ids)
@@ -158,6 +214,15 @@ async def get_portfolio_summary():
 
 @app.get('/summary/{coin_name}')
 async def get_coin_summary(coin_name: str):
+    """
+    This function retrieves a complete summary of the user's portfolio as it
+    pertains to a specified cryptocurrency.
+
+    :param coin_name: The name of the cryptocurrency for which the user is
+    requesting a portfolio summary.
+    :return: The user's cryptocurrency investment portfolio for the requested
+    cryptocurrency.
+    """
     coin = await db.get_coin_from_db(coin_name)
     _id = coin.get('market_id')
     records = await db.get_all_transactions_by_id(_id)
