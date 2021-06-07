@@ -68,15 +68,33 @@ Below is a list of all the important technology used in the production of this a
 
 ## Requirements
 
-Software that needs to be installed. Python, Docker, docker-compose, pipenv.
+1. [Install Python](https://www.python.org/downloads/).
+2. [Install Docker](https://docs.docker.com/get-docker/).
+3. [Install docker-compose](https://docs.docker.com/get-docker/).
+    * **!!**: If you are on Mac or Windows and installed Docker Desktop, you don't need to worry about installing docker-compose, as it comes with Docker Desktop. Only Linux users need to worry about this step.
+4. Clone this repository onto your machine.
+5. Head to [CoinMarketCap](https://coinmarketcap.com/api/) and sign up for a developer account. You can select the Basic plan, which is free and provides 333 daily credits (with a monthly maximum of 10,000 credits). Each call for financial information on 100 cryptocurrencies or fewer will count as a single credit, as will a query for metadata on all of the cryptocurrencies that are on the platform.
 
-Required accounts for the API.
+## Setting Up the Local Python Environment
 
-## Setup
+Once you have everything installed, you will have to set up your Python environment.
 
-How to set up local Python environment
+1. Go into the repository on your machine, and cd into the backend directory.
+2. Run the command `pipenv shell` to set up a virtual environment in the backend directory.
+3. Install the following packages:
+    * aiohttp
+    * celery
+    * fastapi
+    * mongoengine
+    * pydantic
+    * requests
+    * uvicorn
+    * Install pytest as a dev dependency.
+4. Run the command `pip freeze > requirements.txt`. This will update your requirements document with all of the necessary dependencies to use this application.
 
-## How to set up the config file
+Note that any time you install new packages not listed here, you will have to perform step 4 again in order to update your requirements.txt file with all of the necessary dependencies. Then, you must also rebuild the Docker images with the `docker compose up --build` command. See the **Building Up and Tearing Down the Docker Containers** section below for more information.
+
+## Setting Up the Config File
 
 I have provided a sample config file in this repository, but it will take a little work to get it ready to use. Here's the code inside the [sample_config.py](backend/src/sample_config.py) file:
 
@@ -109,7 +127,7 @@ Apart from these values, I wouldn't recommend updating anything.
 
 This app is using docker-compose, so once everything is installed and set up, the `docker-compose.yml` file should have everything the application needs to dockerize itself using just three commands.
 
-1. From the root directory of the project, run the command `docker compose up --build`. This will build the images for the first time, and launch the application.
+1. From the root directory of the project, run the command `docker compose up --build`. This will build the images for the first time, install all of the dependencies in your requirements.txt file, and launch the application.
 2. Whenever you would like to build the application after the first time, you can use `docker compose up` instead.
 3. To bring down the application, use `Ctrl+C` inside the terminal to stop the server. Once it is down, use the command `docker compose down` to dismount it from Docker.
 
