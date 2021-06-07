@@ -78,15 +78,49 @@ How to set up local Python environment
 
 ## How to set up the config file
 
-.
+I have provided a sample config file in this repository, but it will take a little work to get it ready to use. Here's the code inside the [sample_config.py](backend/src/sample_config.py) file:
 
-## Building and Breaking the Docker App
+```python
+username = '<Your MongoDB username.>'
+password = '<Your MongoDB password.>'
+database = '<The name of the MongoDB database you are using.>'
+api_key = '<Your CoinMarketCap API key.>'
 
-Starting up and tearing down the docker compose.
+task_ignore_result = False
+timezone = 'UTC'
+
+beat_schedule = {
+    'update_watchlist': {
+        'task': 'main.update_watchlist_prices',
+        'schedule': 30.0
+    }
+}
+```
+
+The first thing you will have to do will be to rename the file to `config.py`. Make sure it is still in the backend/src directory.
+
+Any of the text in `<angle brackets>` above should be replaced with whatever it says. So, your username will be your MongoDB username, your api_key will be your personal API key from CoinMarketCap, and so on.
+
+If you wish, you can change the frequency with which the database will be updated with current financial information for your watchlist. I would recommend keeping it at 30 seconds, since updating it more frequently doesn't seem to provide new information. You may instead choose to update it *less* frequently, if you intend to keep the server up for a while. At a refresh rate of 30 seconds, you will exhaust your daily 333 credits for the Basic plan in just under 3 hours from database updates alone.
+
+Apart from these values, I wouldn't recommend updating anything.
+
+## Building Up and Tearing Down the Docker Containers
+
+This app is using docker-compose, so once everything is installed and set up, the `docker-compose.yml` file should have everything the application needs to dockerize itself using just three commands.
+
+1. From the root directory of the project, run the command `docker compose up --build`. This will build the images for the first time, and launch the application.
+2. Whenever you would like to build the application after the first time, you can use `docker compose up` instead.
+3. To bring down the application, use `Ctrl+C` inside the terminal to stop the server. Once it is down, use the command `docker compose down` to dismount it from Docker.
 
 ## Running Tests Locally
 
-.
+Once everything is set up, the tests are simple to run.
+
+1. From the root directory of the project, `cd` into the backend directory.
+2. Launch the virtual environment with `pipenv shell`.
+3. Run the command `pytest`.
+4. Assuming everything has been set up correctly, all 5 tests should pass as they are currently written.
 
 ## Future Improvements
 
