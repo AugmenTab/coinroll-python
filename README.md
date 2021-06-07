@@ -145,3 +145,4 @@ Below is a list of improvements that I wanted to add into the application, but h
 * Another stretch goal that would have been useful would be to send log data to InfluxDB.
 * I wrote pydocs comments for the application, but something I will be adding later will be a CI/CD pipeline to generate FastAPI docs and push them to GitHub.
 * More tests are always welcome, so another idea I had was to create a mock-up coin API in order to do more automated testing without having to rely on the CoinMarketCap API.
+* Relying on the requirements.txt file is probably suboptimal since there could be conflicts between that and the Pipfile.lock. A better way would be to have pipenv install the dependencies directly, but I have so far been unable to get it to work in the Dockerfile.
