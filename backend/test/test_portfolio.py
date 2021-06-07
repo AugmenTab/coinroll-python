@@ -122,11 +122,11 @@ def __create_test_records():
     ]
 
 
-def __filter_quotes(coin):
+def __filter_quotes(coin: str):
     return [quote for quote in __quotes if quote['name'] == coin][0]
 
 
-def __filter_test_records(coin):
+def __filter_test_records(coin:str):
     return [record for record in __create_test_records() if record['name'] == coin]
 
 
