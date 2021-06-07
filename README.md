@@ -37,9 +37,10 @@ Below is a list of all the important technology used in the production of this a
 
 ### Development Environment
 
-* [Visual Studio Code](https://code.visualstudio.com/): This is far and away the best free IDE available, and with the right extensions, it can be made to outperform a lot of paid ones, too. Some relevant extensions I use are [Docker]() and [Pylance]().
+* [Visual Studio Code](https://code.visualstudio.com/): This is far and away the best free IDE available, and with the right extensions, it can be made to outperform a lot of paid ones, too. Some relevant extensions I use are [Docker](https://www.docker.com/products/docker-desktop) and [Pylance](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance).
 * [Prospector](https://pypi.org/project/prospector/): The linter requested for this project.
 * [Docker](https://www.docker.com/): The entire app lives in Docker containers managed using the Docker Desktop app for Windows.
+* [Docker Compose](https://docs.docker.com/compose/): This is used to set up a virtual development environment to host all of the servers the application utilizes in order to function.
 * [pipenv](https://pipenv.pypa.io/en/latest/): My virtual environment and package manager of choice.
 * [Trello](https://trello.com/): My personal kanban board for the project lives here.
 
@@ -70,8 +71,8 @@ Below is a list of all the important technology used in the production of this a
 
 1. [Install Python](https://www.python.org/downloads/).
 2. [Install Docker](https://docs.docker.com/get-docker/).
-3. [Install docker-compose](https://docs.docker.com/get-docker/).
-    * **!!**: If you are on Mac or Windows and installed Docker Desktop, you don't need to worry about installing docker-compose, as it comes with Docker Desktop. Only Linux users need to worry about this step.
+3. [Install Docker Compose](https://docs.docker.com/compose/install/).
+    * **!!**: If you are on Mac or Windows and have installed Docker Desktop, you don't need to worry about installing Docker Compose, as it comes with Docker Desktop. Only Linux users need to worry about this step.
 4. Clone this repository onto your machine.
 5. Head to [CoinMarketCap](https://coinmarketcap.com/api/) and sign up for a developer account. You can select the Basic plan, which is free and provides 333 daily credits (with a monthly maximum of 10,000 credits). Each call for financial information on 100 cryptocurrencies or fewer will count as a single credit, as will a query for metadata on all of the cryptocurrencies that are on the platform.
 
@@ -79,17 +80,9 @@ Below is a list of all the important technology used in the production of this a
 
 Once you have everything installed, you will have to set up your Python environment.
 
-1. Go into the repository on your machine, and cd into the backend directory.
+1. Go into the repository on your machine, and `cd` into the backend directory.
 2. Run the command `pipenv shell` to set up a virtual environment in the backend directory.
-3. Install the following packages:
-    * aiohttp
-    * celery
-    * fastapi
-    * mongoengine
-    * pydantic
-    * requests
-    * uvicorn
-    * Install pytest as a dev dependency.
+3. Run the command `pipenv install --dev` to install the dependencies.
 4. Run the command `pip freeze > requirements.txt`. This will update your requirements document with all of the necessary dependencies to use this application.
 
 Note that any time you install new packages not listed here, you will have to perform step 4 again in order to update your requirements.txt file with all of the necessary dependencies. Then, you must also rebuild the Docker images with the `docker compose up --build` command. See the **Building Up and Tearing Down the Docker Containers** section below for more information.
@@ -125,7 +118,7 @@ Apart from these values, I wouldn't recommend updating anything.
 
 ## Building Up and Tearing Down the Docker Containers
 
-This app is using docker-compose, so once everything is installed and set up, the `docker-compose.yml` file should have everything the application needs to dockerize itself using just three commands.
+This app is using Docker Compose, so once everything is installed and set up, the `docker-compose.yml` file should have everything the application needs to dockerize itself using just three commands.
 
 1. From the root directory of the project, run the command `docker compose up --build`. This will build the images for the first time, install all of the dependencies in your requirements.txt file, and launch the application.
 2. Whenever you would like to build the application after the first time, you can use `docker compose up` instead.
@@ -136,9 +129,8 @@ This app is using docker-compose, so once everything is installed and set up, th
 Once everything is set up, the tests are simple to run.
 
 1. From the root directory of the project, `cd` into the backend directory.
-2. Launch the virtual environment with `pipenv shell`.
-3. Run the command `pytest`.
-4. Assuming everything has been set up correctly, all 5 tests should pass as they are currently written.
+2. Run the command `pipenv run pytest` to run the tests.
+3. Assuming everything has been set up correctly, all 5 tests should pass as they are currently written.
 
 ## Future Improvements
 
@@ -149,7 +141,7 @@ Below is a list of improvements that I wanted to add into the application, but h
     * A few of the application functions were prime candidates for asyncio's Tasks. Namely, these were the `update_coin_list` and `update_watchlist` functions in the [database](backend/src/database.py) module.
 * I would have liked to have spent more time exploring Pydantic. I tend to prefer static languages, so working with libraries that provide type hints and data validation in dynamic languages like Python only serve to make me that much more comfortable.
 * I had originally intended for the application to have a frontend made using either [Dash](https://plotly.com/dash/) or [Elm](https://elm-lang.org/).
-* Had I more time, and had accomplished a frontend, I would have standardized the information the API returns, likely using ResponseModel.
+* Had I more time, and had accomplished a frontend, I would have standardized the format the API uses to return information, likely using ResponseModel.
 * Another stretch goal that would have been useful would be to send log data to InfluxDB.
 * I wrote pydocs comments for the application, but something I will be adding later will be a CI/CD pipeline to generate FastAPI docs and push them to GitHub.
 * More tests are always welcome, so another idea I had was to create a mock-up coin API in order to do more automated testing without having to rely on the CoinMarketCap API.
