@@ -154,6 +154,7 @@ def update_coin_list(data):  # tasks
         )
         new = Coin.objects(market_id=coin.market_id)
         new.update(name=coin.name, symbol=coin.symbol, upsert=True)
+    print('Database updated with all available cryptocurrencies.')
 
 
 async def update_watchlist(quotes):  # tasks

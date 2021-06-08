@@ -69,11 +69,10 @@ def get_summary(records, quotes):
                    for coin, _ in groupby(records, lambda r: r['name'])}
     summaries = {q['name']: get_coin_summary(coin_groups[q['name']], q) 
                  for q in quotes}
-    stripped = [summaries[s] for s in summaries]
     total_usd_invested = 0
     total_current_usd_value = 0
     total_profit = 0
-    for summary in stripped:
+    for summary in summaries.values():
         total_usd_invested += summary['usd_invested']
         total_current_usd_value += summary['current_usd_value']
         total_profit += summary['total_coin_profit']
