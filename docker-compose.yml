@@ -43,8 +43,6 @@ services:
             - ME_CONFIG_MONGODB_ADMINPASSWORD=pass12345
             - ME_CONFIG_BASICAUTH_USERNAME=admin
             - ME_CONFIG_BASICAUTH_PASSWORD=admin123
-        volumes:
-            - mongodb-data
         depends_on:
             - mongodb
         networks:
